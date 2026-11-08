@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 600" role="img" aria-label="KeepAccount 功能界面视觉示意">
+  <defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f2e8de"/><stop offset="1" stop-color="#e4eade"/></linearGradient><filter id="s"><feDropShadow dx="0" dy="12" stdDeviation="15" flood-color="#5d6b59" flood-opacity=".14"/></filter></defs>
+  <rect width="1100" height="600" rx="20" fill="url(#bg)"/>
+  <g filter="url(#s)"><rect x="84" y="48" width="933" height="508" rx="19" fill="#fffcf4"/></g>
+  <path d="M102 48h897q18 0 18 18v97H84V66q0-18 18-18Z" fill="#426957"/><rect x="84" y="142" width="933" height="21" fill="#426957"/>
+  <text x="124" y="94" font-family="Georgia,serif" font-size="26" fill="#fffaf1">KeepAccount</text><text x="970" y="89" font-family="sans-serif" font-size="12" fill="#dde7d9" letter-spacing="2" text-anchor="end">GENREs / 04</text>
+  <text x="124" y="136" font-family="'Noto Sans SC',sans-serif" font-size="14" fill="#c9d9cc">记下细小的花费，也记下认真生活的日子。</text>
+  <g><rect x="119" y="191" width="260" height="119" rx="15" fill="#e8ede2"/><rect x="392" y="191" width="260" height="119" rx="15" fill="#f5e9dc"/><rect x="665" y="191" width="310" height="119" rx="15" fill="#edf0e8"/></g>
+  <g font-family="'Noto Sans SC',sans-serif" font-size="15" fill="#768779"><text x="143" y="225">今日支出</text><text x="417" y="225">本月累计</text><text x="692" y="225">记录条数</text></g>
+  <g font-family="Georgia,serif" font-size="34" fill="#3f614f"><text x="141" y="275">¥ 53.50</text><text x="415" y="275">¥ 682.80</text><text x="692" y="275">24</text></g>
+  <text x="125" y="357" font-family="'Noto Sans SC',sans-serif" font-size="20" fill="#536b58">每日账单</text><text x="973" y="355" text-anchor="end" font-family="sans-serif" font-size="14" fill="#92a090">November 2026</text>
+  <line x1="122" y1="378" x2="976" y2="378" stroke="#e3e4d8"/>
+  <g font-family="'Noto Sans SC',sans-serif" font-size="16" fill="#576b5a"><text x="131" y="420">11月06日</text><text x="305" y="420">午饭</text><text x="305" y="457">咖啡</text><text x="131" y="501">11月05日</text><text x="305" y="501">文具</text></g>
+  <g font-family="Georgia,serif" font-size="19" fill="#6a7662" text-anchor="end"><text x="941" y="420">¥ 35.50</text><text x="941" y="457">¥ 18.00</text><text x="941" y="501">¥ 12.00</text></g>
+  <path d="M270 476H948" stroke="#ecece2"/><line x1="124" y1="517" x2="978" y2="517" stroke="#ecece2"/>
+  <g filter="url(#s)"><rect x="718" y="511" width="253" height="54" rx="18" fill="#e5d1bb"/></g>
+  <text x="743" y="543" font-family="sans-serif" font-size="16" fill="#735f4d">＋  Quick entry</text>
+  <text x="983" y="583" font-family="sans-serif" font-size="11" text-anchor="end" fill="#91877c" letter-spacing="2">ILLUSTRATIVE PREVIEW · NOT A SCREENSHOT</text>
+</svg>

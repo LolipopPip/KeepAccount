@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline';" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KeepAccount · 消费记录</title>
+<style>
+:root{
+  --bg:#EEF4EA;
+  --bg2:#E1E8D8;
+  --paper:rgba(252,251,246,0.94);
+  --paper-soft:rgba(245,242,233,0.88);
+  --ink:#203126;
+  --ink-soft:#5F6E63;
+  --ink-faint:#869488;
+  --line:#D6DDCC;
+  --green:#4C7B5D;
+  --green-soft:#DDE9DE;
+  --amber:#C98C2D;
+  --amber-soft:#F3E2BD;
+  --rose:#B55B61;
+  --rose-soft:#F1D8DA;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 4px 16px rgba(32,49,38,0.10);
+  --shadow-lg:0 12px 34px rgba(32,49,38,0.18);
+  --mono:"SF Mono","Cascadia Mono","Menlo","Consolas",monospace;
+  --sans:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;min-height:100%;}
+body{
+  font-family:var(--sans);
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255,255,255,0.55), transparent 36%),
+    linear-gradient(160deg,var(--bg),var(--bg2));
+  -webkit-font-smoothing:antialiased;
+}
+button,input{font:inherit;}
+button{cursor:pointer;}
+.hidden{display:none !important;}
+::selection{background:var(--amber-soft);}
+
+#app{
+  max-width:1080px;
+  margin:0 auto;
+  padding:28px 20px 88px;
+}
+
+.topbar{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+.brand-mark{
+  width:42px;height:42px;border-radius:12px;
+  background:linear-gradient(160deg,var(--ink),#3A5842);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-weight:800;letter-spacing:.04em;box-shadow:var(--shadow);
+}
+.brand-copy h1{
+  margin:0;
+  font-size:24px;
+  line-height:1.1;
+  letter-spacing:0;
+}
+.brand-copy p{
+  margin:4px 0 0;
+  font-size:12.5px;
+  color:var(--ink-faint);
+}
+.stats{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.stat{
+  min-width:126px;
+  padding:12px 14px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:rgba(255,255,255,0.55);
+  box-shadow:var(--shadow);
+}
+.stat span{
+  display:block;
+  font-size:11px;
+  letter-spacing:.08em;
+  color:var(--ink-faint);
+  text-transform:uppercase;
+}
+.stat b{
+  display:block;
+  margin-top:6px;
+  font-family:var(--mono);
+  font-size:20px;
+  color:var(--ink);
+}
+
+.panel{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+.panel + .panel{margin-top:16px;}
+.section-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.section-head h2{
+  margin:0;
+  font-size:18px;
+  line-height:1.2;
+}
+.section-head .hint{
+  color:var(--ink-faint);
+  font-size:12.5px;
+}
+
+.entry-form{
+  display:grid;
+  grid-template-columns:1.2fr 1.6fr 1fr auto;
+  gap:10px;
+  align-items:end;
+}
+.entry-form label{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+  color:var(--ink-soft);
+  font-weight:700;
+}
+.entry-form input{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:11px 12px;
+  background:var(--paper-soft);
+  color:var(--ink);
+  outline:none;
+}
+.entry-form input:focus{
+  border-color:rgba(76,123,93,0.9);
+  box-shadow:0 0 0 2px rgba(76,123,93,0.18);
+}
+.entry-form .submit{
+  border:0;
+  border-radius:999px;
+  padding:11px 18px;
+  background:linear-gradient(180deg,var(--green),#40684E);
+  color:#fff;
+  box-shadow:0 8px 20px rgba(76,123,93,0.22);
+  white-space:nowrap;
+}
+.entry-help{
+  margin-top:10px;
+  font-size:12.5px;
+  color:var(--ink-faint);
+}
+
+#summaryStrip{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.summary-chip{
+  flex:1 1 160px;
+  min-width:160px;
+  padding:12px 14px;
+  border-radius:10px;
+  background:var(--paper-soft);
+  border:1px solid var(--line);
+}
+.summary-chip span{
+  display:block;
+  color:var(--ink-faint);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.summary-chip b{
+  display:block;
+  margin-top:6px;
+  font-size:20px;
+  font-family:var(--mono);
+}
+
+.record-wrap{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.date-group{
+  padding:14px;
+  border-radius:var(--radius);
+  background:rgba(255,255,255,0.55);
+  border:1px solid var(--line);
+}
+.date-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.date-title{
+  font-size:15px;
+  font-weight:800;
+}
+.date-sub{
+  color:var(--ink-faint);
+  font-size:12px;
+}
+.date-total{
+  color:var(--green);
+  font-weight:800;
+  font-family:var(--mono);
+}
+.record-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.record-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:10px;
+  background:var(--paper);
+  border:1px solid var(--line);
+}
+.record-main{
+  min-width:0;
+  flex:1;
+}
+.record-note{
+  font-weight:700;
+  line-height:1.3;
+  word-break:break-word;
+}
+.record-meta{
+  margin-top:4px;
+  font-size:12px;
+  color:var(--ink-faint);
+}
+.record-amount{
+  font-family:var(--mono);
+  font-weight:800;
+  color:var(--ink);
+  white-space:nowrap;
+}
+.icon-btn{
+  width:30px;
+  height:30px;
+  border:0;
+  border-radius:999px;
+  background:var(--rose-soft);
+  color:#8A3F47;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+}
+.icon-btn:hover{filter:brightness(0.98);}
+
+.empty{
+  text-align:center;
+  padding:42px 16px;
+  color:var(--ink-faint);
+}
+.empty .big{
+  display:block;
+  font-size:36px;
+  margin-bottom:10px;
+}
+
+.widget-shell{
+  width:100vw;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  -webkit-app-region: drag;
+}
+body.widget-mode{
+  overflow:hidden;
+  background:transparent;
+}
+body.widget-mode #app{display:none;}
+.widget-card{
+  width:min(360px, calc(100vw - 20px));
+  min-height:214px;
+  border-radius:26px;
+  padding:18px 18px 16px;
+  background:
+    linear-gradient(160deg, rgba(251,248,239,0.98), rgba(240,233,216,0.98)),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.24) 0 8px, rgba(255,255,255,0.06) 8px 16px);
+  border:1px solid rgba(214,221,204,0.95);
+  box-shadow:0 14px 30px rgba(32,49,38,0.18);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  -webkit-app-region: no-drag;
+}
+.widget-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  -webkit-app-region: drag;
+}
+.widget-label{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.18em;
+  color:var(--ink-faint);
+}
+.widget-actions{
+  display:flex;
+  gap:8px;
+}
+.widget-action{
+  width:28px;
+  height:28px;
+  border:0;
+  border-radius:999px;
+  background:rgba(255,255,255,0.68);
+  color:var(--ink-soft);
+  -webkit-app-region: no-drag;
+}
+.widget-amount-row{
+  margin-top:14px;
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  -webkit-app-region: drag;
+}
+.widget-amount{
+  font-family:var(--mono);
+  font-size:34px;
+  font-weight:900;
+  color:var(--ink);
+  line-height:1;
+}
+.widget-amount-label{
+  font-size:12px;
+  color:var(--ink-faint);
+  font-weight:700;
+}
+.widget-input{
+  width:100%;
+  margin-top:12px;
+  padding:11px 14px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:rgba(255,255,255,0.72);
+  color:var(--ink);
+  outline:none;
+  -webkit-app-region: no-drag;
+}
+.widget-input:focus{
+  border-color:rgba(201,140,45,0.92);
+  box-shadow:0 0 0 2px rgba(201,140,45,0.16);
+}
+.widget-sub{
+  margin-top:8px;
+  font-size:12px;
+  color:var(--ink-faint);
+  -webkit-app-region: drag;
+}
+.widget-msg{
+  min-height:18px;
+  margin-top:8px;
+  font-size:12px;
+  font-weight:700;
+  color:var(--green);
+}
+.widget-book-btn{
+  width:min(160px, calc(100vw - 24px));
+  height:104px;
+  border:0;
+  border-radius:22px;
+  position:relative;
+  overflow:hidden;
+  padding:14px 14px 12px 24px;
+  text-align:left;
+  color:#fff;
+  background:
+    linear-gradient(160deg, #D39A49 0%, #B77A33 34%, #8E5A29 72%, #6F431C 100%);
+  box-shadow:0 14px 24px rgba(128,85,39,0.30);
+  -webkit-app-region: no-drag;
+}
+.widget-book-btn::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:20px;
+  background:linear-gradient(180deg, #7A4B20, #5A3617);
+  box-shadow:inset -1px 0 0 rgba(255,255,255,0.18);
+}
+.widget-book-btn::after{
+  content:"";
+  position:absolute;
+  inset:10px 10px 10px 30px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02)),
+    repeating-linear-gradient(180deg, rgba(255,255,255,0.10) 0 1px, transparent 1px 10px);
+}
+.widget-book-content{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:2px;
+  height:100%;
+}
+.widget-book-kicker{
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:0.2em;
+  opacity:0.82;
+}
+.widget-book-title{
+  font-size:20px;
+  line-height:1;
+  font-weight:900;
+  margin-top:2px;
+}
+.widget-book-total{
+  font-family:var(--mono);
+  font-size:16px;
+  font-weight:800;
+  margin-top:4px;
+}
+.widget-book-sub{
+  font-size:11px;
+  opacity:0.88;
+}
+.widget-book-btn.hidden{display:none;}
+
+@media (max-width:820px){
+  .entry-form{grid-template-columns:1fr 1fr;}
+  .entry-form .submit{grid-column:1 / -1;}
+}
+@media (max-width:560px){
+  #app{padding:18px 14px 72px;}
+  .panel{padding:14px;}
+  .entry-form{grid-template-columns:1fr;}
+  .stats{width:100%;}
+  .stat{min-width:0;flex:1 1 140px;}
+  .record-row{align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">KA</div>
+      <div class="brand-copy">
+        <h1>KeepAccount</h1>
+        <p>输入金钱和用途，按日期自动汇总消费总额</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <span>今日支出</span>
+        <b id="todayTotal">¥0.00</b>
+      </div>
+      <div class="stat">
+        <span>本月支出</span>
+        <b id="monthTotal">¥0.00</b>
+      </div>
+      <div class="stat">
+        <span>记录数</span>
+        <b id="recordCount">0</b>
+      </div>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="section-head">
+      <h2>快速记一笔</h2>
+      <div class="hint">桌面小组件里可直接输入 <code>金额（用途）</code></div>
+    </div>
+    <form class="entry-form" id="entryForm">
+      <label>
+        <span>金额</span>
+        <input id="amountInput" inputmode="decimal" placeholder="35.50" autocomplete="off" />
+      </label>
+      <label>
+        <span>用途</span>
+        <input id="noteInput" placeholder="午饭 / 打车 / 电影" autocomplete="off" />
+      </label>
+      <label>
+        <span>日期</span>
+        <input id="dateInput" type="date" />
+      </label>
+      <button class="submit" type="submit">添加记录</button>
+    </form>
+    <div class="entry-help">支持直接输入 `35.5（午饭）`、`35.5 午饭`，默认记录今天。</div>
+    <div id="summaryStrip">
+      <div class="summary-chip">
+        <span>今天总额</span>
+        <b id="todaySummary">¥0.00</b>
+      </div>
+      <div class="summary-chip">
+        <span>本月总额</span>
+        <b id="monthSummary">¥0.00</b>
+      </div>
+      <div class="summary-chip">
+        <span>最近更新</span>
+        <b id="lastUpdated">--</b>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="section-head">
+      <h2>按日期记录</h2>
+      <div class="hint">每个日期会自动计算当日消费总额</div>
+    </div>
+    <div id="recordList" class="record-wrap"></div>
+    <div id="emptyState" class="empty hidden">
+      <span class="big">🧾</span>
+      还没有记账，先在上面输入一笔吧。
+    </div>
+  </section>
+</div>
+
+<div id="widgetApp" class="widget-shell hidden">
+  <div class="widget-card" id="widgetCard">
+    <div class="widget-top">
+      <span class="widget-label">KEEP ACCOUNT</span>
+      <div class="widget-actions">
+        <button id="widgetOpenMainBtn" class="widget-action" type="button" title="打开主页面">⤢</button>
+        <button id="widgetCollapseBtn" class="widget-action" type="button" title="收起为气泡">−</button>
+      </div>
+    </div>
+    <div class="widget-amount-row">
+      <span id="widgetTodayTotal" class="widget-amount">¥0.00</span>
+      <span class="widget-amount-label">今日消费</span>
+    </div>
+    <input id="widgetInput" class="widget-input" placeholder="35.5（午饭）" autocomplete="off" />
+    <div class="widget-sub">回车保存，日期自动记为今天</div>
+    <div id="widgetMsg" class="widget-msg"></div>
+  </div>
+  <button id="widgetBubbleBtn" class="widget-book-btn hidden" type="button" title="展开">
+    <span class="widget-book-content">
+      <span class="widget-book-kicker">KEEP ACCOUNT</span>
+      <span class="widget-book-title">账本</span>
+      <span id="widgetBookTotal" class="widget-book-total">¥0.00</span>
+      <span class="widget-book-sub">点击展开</span>
+    </span>
+  </button>
+</div>
+
+<script>
+(function () {
+  const STORE_KEY = 'keepAccountData_v1';
+  const compactWindowSize = { width: 192, height: 136 };
+  const expandedWindowSize = { width: 392, height: 276 };
+  const desktopApi = window.keepAccountDesktop || null;
+  const state = { records: [] };
+  const isWidgetMode = new URLSearchParams(location.search).get('widget') === '1';
+
+  const todayTotalEl = document.getElementById('todayTotal');
+  const monthTotalEl = document.getElementById('monthTotal');
+  const recordCountEl = document.getElementById('recordCount');
+  const todaySummaryEl = document.getElementById('todaySummary');
+  const monthSummaryEl = document.getElementById('monthSummary');
+  const lastUpdatedEl = document.getElementById('lastUpdated');
+  const recordListEl = document.getElementById('recordList');
+  const emptyStateEl = document.getElementById('emptyState');
+  const dateInput = document.getElementById('dateInput');
+  const amountInput = document.getElementById('amountInput');
+  const noteInput = document.getElementById('noteInput');
+  const entryForm = document.getElementById('entryForm');
+  const widgetInput = document.getElementById('widgetInput');
+  const widgetMsg = document.getElementById('widgetMsg');
+  const widgetTodayTotal = document.getElementById('widgetTodayTotal');
+  const widgetBookTotal = document.getElementById('widgetBookTotal');
+  const widgetCard = document.getElementById('widgetCard');
+  const widgetBubbleBtn = document.getElementById('widgetBubbleBtn');
+
+  dateInput.value = todayString();
+
+  function uid() {
+    return `ka_${Math.random().toString(36).slice(2, 10)}_${Date.now().toString(36)}`;
+  }
+
+  function todayString(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  function timeString(date = new Date()) {
+    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+  }
+
+  function currency(value) {
+    return new Intl.NumberFormat('zh-CN', {
+      style: 'currency',
+      currency: 'CNY',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(Number(value) || 0);
+  }
+
+  function escapeHtml(text) {
+    return String(text)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
+  function loadLegacyState() {
+    const fallback = { records: [] };
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return fallback;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return fallback;
+      const records = Array.isArray(parsed.records) ? parsed.records : [];
+      return {
+        records: records
+          .map(normalizeRecord)
+          .filter(Boolean)
+      };
+    } catch {
+      return fallback;
+    }
+  }
+
+  async function persistState() {
+    if (desktopApi && typeof desktopApi.saveState === 'function') {
+      await desktopApi.saveState(state);
+      return;
+    }
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  }
+
+  function normalizeRecord(record) {
+    if (!record || typeof record !== 'object') return null;
+    const amount = Number(record.amount);
+    const date = String(record.date || '').trim();
+    const note = String(record.note || '').trim();
+    const createdAt = Number.isFinite(record.createdAt) ? record.createdAt : Date.now();
+    if (!Number.isFinite(amount) || amount <= 0 || !date) return null;
+    return {
+      id: String(record.id || uid()),
+      amount: Math.round(amount * 100) / 100,
+      note: note || '未命名用途',
+      date,
+      createdAt
+    };
+  }
+
+  function parseMoneyInput(raw) {
+    const text = String(raw || '').trim().replace(/，/g, ',');
+    if (!text) return null;
+    const match = text.match(/^([+-]?\d+(?:\.\d+)?)\s*(?:[（(]\s*(.+?)\s*[)）]|[,，\s]+(.+))?$/);
+    if (!match) return null;
+    const amount = Number(match[1]);
+    const note = String(match[2] || match[3] || '').trim();
+    if (!Number.isFinite(amount) || amount <= 0) return null;
+    return {
+      amount: Math.round(amount * 100) / 100,
+      note: note || '未命名用途'
+    };
+  }
+
+  function addRecord(nextRecord) {
+    const record = normalizeRecord(nextRecord);
+    if (!record) return false;
+    state.records.unshift(record);
+    persistState().catch((error) => console.error('Failed to persist KeepAccount record:', error));
+    renderAll();
+    return true;
+  }
+
+  function groupRecordsByDate(records) {
+    const groups = new Map();
+    for (const record of records) {
+      if (!groups.has(record.date)) groups.set(record.date, []);
+      groups.get(record.date).push(record);
+    }
+    return [...groups.entries()]
+      .sort((a, b) => b[0].localeCompare(a[0]))
+      .map(([date, items]) => {
+        const sortedItems = items.sort((a, b) => b.createdAt - a.createdAt);
+        return {
+          date,
+          items: sortedItems,
+          total: sortedItems.reduce((sum, item) => sum + item.amount, 0)
+        };
+      });
+  }
+
+  function sumRecords(filterFn) {
+    return state.records.filter(filterFn).reduce((sum, item) => sum + item.amount, 0);
+  }
+
+  function monthPrefix(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${year}-${month}`;
+  }
+
+  function renderSummary() {
+    const today = todayString();
+    const month = monthPrefix();
+    const todayTotal = sumRecords((record) => record.date === today);
+    const monthTotal = sumRecords((record) => record.date.startsWith(month));
+    const recordCount = state.records.length;
+
+    todayTotalEl.textContent = currency(todayTotal);
+    monthTotalEl.textContent = currency(monthTotal);
+    recordCountEl.textContent = String(recordCount);
+    todaySummaryEl.textContent = currency(todayTotal);
+    monthSummaryEl.textContent = currency(monthTotal);
+    widgetTodayTotal.textContent = currency(todayTotal);
+    widgetBookTotal.textContent = currency(todayTotal);
+    lastUpdatedEl.textContent = state.records[0]
+      ? `${state.records[0].date} ${timeString(new Date(state.records[0].createdAt))}`
+      : '--';
+  }
+
+  function renderRecords() {
+    const groups = groupRecordsByDate(state.records);
+    recordListEl.innerHTML = '';
+    emptyStateEl.classList.toggle('hidden', groups.length !== 0);
+
+    for (const group of groups) {
+      const groupEl = document.createElement('section');
+      groupEl.className = 'date-group';
+      groupEl.innerHTML = `
+        <div class="date-head">
+          <div>
+            <div class="date-title">${escapeHtml(group.date)}</div>
+            <div class="date-sub">${group.items.length} 笔记录</div>
+          </div>
+          <div class="date-total">${currency(group.total)}</div>
+        </div>
+        <div class="record-list">
+          ${group.items.map((item) => `
+            <div class="record-row" data-id="${escapeHtml(item.id)}">
+              <div class="record-main">
+                <div class="record-note">${escapeHtml(item.note)}</div>
+                <div class="record-meta">${escapeHtml(item.date)} ${escapeHtml(timeString(new Date(item.createdAt)))}</div>
+              </div>
+              <div class="record-amount">${currency(item.amount)}</div>
+              <button class="icon-btn" type="button" data-delete="${escapeHtml(item.id)}" title="删除">×</button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      recordListEl.appendChild(groupEl);
+    }
+
+    recordListEl.querySelectorAll('[data-delete]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const id = button.getAttribute('data-delete');
+        const record = state.records.find((item) => item.id === id);
+        if (!record) return;
+        if (!window.confirm(`删除这条记录吗？\n${record.date} ${record.note} / ${currency(record.amount)}`)) {
+          return;
+        }
+        state.records = state.records.filter((item) => item.id !== id);
+        persistState().catch((error) => console.error('Failed to persist KeepAccount record:', error));
+        renderAll();
+      });
+    });
+  }
+
+  function renderAll() {
+    renderSummary();
+    renderRecords();
+  }
+
+  function submitEntry(amount, note, date = todayString()) {
+    return addRecord({
+      id: uid(),
+      amount,
+      note,
+      date,
+      createdAt: Date.now()
+    });
+  }
+
+  function submitWidget() {
+    const parsed = parseMoneyInput(widgetInput.value);
+    if (!parsed) {
+      widgetMsg.textContent = '请输入金额，例如 35.5（午饭）';
+      widgetMsg.style.color = 'var(--rose)';
+      return;
+    }
+    const ok = submitEntry(parsed.amount, parsed.note, todayString());
+    if (ok) {
+      widgetInput.value = '';
+      widgetMsg.textContent = `已记录 ${currency(parsed.amount)}`;
+      widgetMsg.style.color = 'var(--green)';
+      setTimeout(() => {
+        if (widgetMsg.textContent === `已记录 ${currency(parsed.amount)}`) {
+          widgetMsg.textContent = '';
+        }
+      }, 1600);
+    }
+  }
+
+  function setWidgetMode(isCompact) {
+    widgetCard.classList.toggle('hidden', isCompact);
+    widgetBubbleBtn.classList.toggle('hidden', !isCompact);
+
+    if (desktopApi && typeof desktopApi.setWidgetMode === 'function') {
+      desktopApi.setWidgetMode(isCompact ? 'compact' : 'expanded');
+      return;
+    }
+
+    try {
+      const width = isCompact ? compactWindowSize.width : expandedWindowSize.width;
+      const height = isCompact ? compactWindowSize.height : expandedWindowSize.height;
+      window.resizeTo(width, height);
+      if (isCompact) {
+        const left = Math.max(0, (screen.availWidth || window.screen.width || 800) - width - 24);
+        const top = Math.max(0, (screen.availHeight || window.screen.height || 600) - height - 20);
+        window.moveTo(left, top);
+      }
+    } catch {
+      // Ignore browsers that refuse window resizing.
+    }
+  }
+
+  function openMainPage() {
+    if (desktopApi && typeof desktopApi.restoreMain === 'function') {
+      desktopApi.restoreMain();
+      return;
+    }
+    window.open(location.href.split('?')[0], 'keepAccountMain');
+  }
+
+  entryForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const amount = Number(String(amountInput.value || '').replace(/,/g, '').trim());
+    const note = String(noteInput.value || '').trim() || '未命名用途';
+    const date = String(dateInput.value || todayString()).trim() || todayString();
+    if (!Number.isFinite(amount) || amount <= 0) {
+      amountInput.focus();
+      amountInput.select();
+      return;
+    }
+    if (submitEntry(Math.round(amount * 100) / 100, note, date)) {
+      amountInput.value = '';
+      noteInput.value = '';
+      dateInput.value = todayString();
+      amountInput.focus();
+    }
+  });
+
+  widgetInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      submitWidget();
+    }
+  });
+
+  widgetBubbleBtn.addEventListener('click', () => setWidgetMode(false));
+  document.getElementById('widgetCollapseBtn').addEventListener('click', () => setWidgetMode(true));
+  document.getElementById('widgetOpenMainBtn').addEventListener('click', openMainPage);
+
+  async function initialize() {
+    let nextState = { records: [] };
+    if (desktopApi && typeof desktopApi.getState === 'function') {
+      const stored = await desktopApi.getState();
+      if (stored && typeof stored === 'object' && Array.isArray(stored.records)) {
+        nextState = stored;
+      }
+    }
+
+    if (!nextState.records.length) {
+      const legacyState = loadLegacyState();
+      if (legacyState.records.length) {
+        nextState = legacyState;
+        if (desktopApi && typeof desktopApi.saveState === 'function') {
+          await desktopApi.saveState(nextState);
+        }
+        localStorage.removeItem(STORE_KEY);
+      }
+    }
+
+    state.records = nextState.records.map(normalizeRecord).filter(Boolean);
+
+    if (isWidgetMode) {
+      document.body.classList.add('widget-mode');
+      document.getElementById('widgetApp').classList.remove('hidden');
+      setWidgetMode(true);
+      widgetInput.focus();
+    } else {
+      renderAll();
+    }
+  }
+
+  initialize().catch((error) => {
+    console.error('Failed to initialize KeepAccount state:', error);
+    renderAll();
+  });
+})();
+</script>
+</body>
+</html>

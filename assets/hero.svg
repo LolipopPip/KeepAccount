@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" role="img" aria-label="KeepAccount · GENREs">
+  <defs>
+    <linearGradient id="paper" x2="1" y2="1"><stop stop-color="#f9f6ed"/><stop offset=".55" stop-color="#f4eee4"/><stop offset="1" stop-color="#e4e9dd"/></linearGradient>
+    <radialGradient id="peach"><stop stop-color="#e9b5a8" stop-opacity=".45"/><stop offset="1" stop-color="#e9b5a8" stop-opacity="0"/></radialGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".54" numOctaves="3" seed="9"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope=".08"/></feComponentTransfer></filter>
+  </defs>
+  <rect width="1200" height="460" rx="22" fill="url(#paper)"/><circle cx="1039" cy="125" r="260" fill="url(#peach)"/>
+  <text x="80" y="76" fill="#3d5148" font-size="23" font-family="Georgia,serif" letter-spacing="9">GENREs</text><path d="M80 92H279" stroke="#a9a28f"/>
+  <text x="80" y="155" fill="#8b8671" font-size="16" font-family="sans-serif" letter-spacing="4">THE LITTLE TOOL COLLECTION / 04</text>
+  <text x="75" y="254" fill="#3b5147" font-size="89" font-family="Georgia,serif" letter-spacing="-4">KeepAccount</text>
+  <text x="80" y="312" fill="#737969" font-size="26" font-family="'Noto Serif SC','Songti SC',serif" letter-spacing="6">把生活的细节，轻轻记下。</text>
+  <text x="80" y="365" fill="#7f8170" font-size="18" font-family="sans-serif">每一笔日常，都值得被认真对待。</text>
+  <g transform="translate(875 103) rotate(-8)">
+    <rect width="237" height="289" rx="13" fill="#a5a889" opacity=".24" transform="translate(12 15)"/>
+    <rect width="237" height="289" rx="13" fill="#fffcf4" stroke="#a6a693" stroke-width="2"/>
+    <path d="M29 61h177M29 110h177M29 160h177M29 210h177M29 260h177" stroke="#d8d7c7" stroke-width="2"/>
+    <text x="31" y="42" font-family="Georgia,serif" font-size="22" fill="#5e7866" letter-spacing="3">ledger / 04</text>
+    <path d="M44 90l8 8l15-20M44 138l8 8l15-20" fill="none" stroke="#729783" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="91" y="96" fill="#6d7769" font-size="20" font-family="Georgia,serif">¥ 35.50</text><text x="91" y="145" fill="#6d7769" font-size="20" font-family="Georgia,serif">¥ 18.00</text>
+  </g>
+  <g stroke="#7d8e7a" stroke-width="2" fill="none" opacity=".75"><path d="M800 343q-19-46-40-58"/><path d="M766 301q-39 6-37-18q29-11 37 18Z"/><path d="M781 321q34-17 38-38q-29-1-38 38Z"/></g>
+  <circle cx="1138" cy="109" r="9" fill="#d5a78f" opacity=".6"/>
+  <rect width="1200" height="460" fill="#6f705e" opacity=".32" filter="url(#grain)"/>
+  <text x="1136" y="427" fill="#8c8c7a" font-size="13" font-family="sans-serif" text-anchor="end" letter-spacing="4">EVERY LITTLE THING</text>
+</svg>
